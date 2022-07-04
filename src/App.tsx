@@ -6,35 +6,37 @@ import {FullCategoryList} from "./components/FullCategoryList";
 import {CategoryPage} from "./components/CategoryPage";
 import {Routes, Route} from "react-router-dom";
 
-
-const initialData: Array<DataType> =
-    [
-        {
-            "id": 1,
-            "pageType": "",
-            "pageTitle": "",
-            "isActive": false,
-            "content": ""
-        }
-    ]
 export type DataType = {
     id: number
-    pageType: string
+    pageType: PageTypesType
     pageTitle: string
     isActive: boolean
     content: string
 }
+
+export type PageTypesType = "category" | "page";
+
 export type InitialDataType = {
-    data: Array<DataType>
+    data: DataType[]
     inputFilter: string
     isActiveFilter: boolean
 
 }
+const initialData: DataType[] =
+    [
+        {
+            "id": 1,
+            "pageType": "category",
+            "pageTitle": "",
+            "isActive": false,
+            "content": ""
+        }
+    ];
 
 function App() {
 
-    const [state, setState] = useState({
-        date: initialData,
+    const [state, setState] = useState<InitialDataType>({
+        data: initialData,
         inputFilter: "",
         isActiveFilter: false
     });
@@ -42,12 +44,12 @@ function App() {
         axios.get("./data.json")
             .then(res => {
                     console.log(res.data)
-                    setState({...state, date: res.data});
+                    setState({...state, data: res.data});
                 }
             )
             .catch(err => console.log(err))
     }, [])
-    let data = [...state.date];
+    let data = [...state.data];
 
 
     const onChangeInputFitler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -68,8 +70,8 @@ function App() {
         console.log(data);
     }
     const changeStatus = (id: number, e: boolean) => {
-        let newData = state.date.map(item => item.id === id ? {...item, isActive: e} : {...item})
-        setState({...state, date: newData});
+        let newData = state.data.map(item => item.id === id ? {...item, isActive: e} : {...item})
+        setState({...state, data: newData});
     }
     return (
 
@@ -98,7 +100,7 @@ function App() {
                             }
                         </>
                     }/>
-                    <Route path="/cat/:catId" element={<CategoryPage data={state.date} callBack={changeStatus}/>}/>
+                    <Route path="/cat/:catId" element={<CategoryPage data={state.data} callBack={changeStatus}/>}/>
                 </Routes>
 
             </div>
